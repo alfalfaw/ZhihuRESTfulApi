@@ -1,0 +1,36 @@
+{
+  "name": "zhihu-restful-api",
+  "version": "1.0.0",
+  "description": "zhihu restful api",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "nodemon src/app",
+    "start": "NODE_ENV=production node src/app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/alfalfaw/zhihu-api.git"
+  },
+  "keywords": [
+    "zhihu"
+  ],
+  "author": "alfalfaw",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alfalfaw/zhihu-api/issues"
+  },
+  "homepage": "https://github.com/alfalfaw/zhihu-api#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.13.0",
+    "koa-body": "^4.2.0",
+    "koa-json-error": "^3.1.2",
+    "koa-jwt": "^4.0.0",
+    "koa-parameter": "^3.0.1",
+    "koa-router": "^9.4.0",
+    "koa-static": "^5.0.0",
+    "mongoose": "^5.10.7"
+  }
+}
