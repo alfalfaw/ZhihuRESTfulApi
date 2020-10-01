@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/alfalfaw/zhihu-api.git"
+    "url": "git+ssh://git@github.com:alfalfaw/ZhihuRESTfulApi.git"
   },
   "keywords": [
     "zhihu"
@@ -18,9 +18,9 @@
   "author": "alfalfaw",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/alfalfaw/zhihu-api/issues"
+    "url": "https://github.com/alfalfaw/ZhihuRESTfulApi/issues"
   },
-  "homepage": "https://github.com/alfalfaw/zhihu-api#readme",
+  "homepage": "https://github.com/alfalfaw/ZhihuRESTfulApi#readme",
   "dependencies": {
     "bcrypt": "^5.0.0",
     "jsonwebtoken": "^8.5.1",
