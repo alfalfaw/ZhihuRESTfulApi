@@ -6,17 +6,24 @@ class CommentsCtl {
     const page = Math.max(ctx.query.page * 1, 1) - 1;
     const perPage = Math.max(per_page * 1, 1);
     const q = new RegExp(ctx.query.q);
-    const { rootCommentId } = ctx.query;
-    console.log("oooo");
+
     ctx.body = await Comment.find({
       content: q,
       questionId: ctx.params.questionId,
       answerId: ctx.params.answerId,
-      rootCommentId,
+      parentId: null,
     })
       .limit(perPage)
       .skip(perPage * page)
-      .populate("commentator replyTo");
+      .populate({
+        path: "replies commentator",
+        populate: {
+          path: "replies commentator replyTo",
+          populate: {
+            path: "replies commentator replyTo",
+          },
+        },
+      });
   }
 
   async findById(ctx) {
@@ -35,10 +42,13 @@ class CommentsCtl {
     ctx.body = comment;
   }
 
+  // 5f77ceaeaa32206ae22d2531
+  // 5f71d3d498d4dc0de13200f5
+
   async create(ctx) {
     ctx.verifyParams({
       content: { type: "string", required: true },
-      rootCommentId: { type: "string", required: false },
+      parentId: { type: "string", required: false },
       replyTo: { type: "string", required: false },
     });
     const commentator = ctx.state.user._id;

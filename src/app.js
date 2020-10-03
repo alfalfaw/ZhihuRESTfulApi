@@ -39,10 +39,10 @@ routing(app);
 mongoose.connect(
   connectionStr,
   { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false },
-  () => console.log("connect")
+  () => console.log("MongoDB 连接成功！")
 );
 
 mongoose.connection.on("error", console.error);
 app.listen(3000, () => {
-  console.log("http://localhost:3000");
+  console.log("程序运行在 3000 端口");
 });

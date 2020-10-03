@@ -31,7 +31,7 @@ class UsersCtl {
       .populate(
         "locations business employments.company employments.job educations.school educations.major following followingTopics likingAnswers dislikingAnswers collectingAnswers"
       );
-    //  locations business employments.company employments.job educations.school educations.major
+
     if (!user) {
       ctx.throw(404, "用户不存在");
     }

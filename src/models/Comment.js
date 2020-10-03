@@ -18,7 +18,6 @@ const commentSchema = new Schema(
     // 赞同数
     answerId: { type: String, required: true },
 
-    rootCommentId: { type: String },
     // 父级评论 id
     parentId: { type: String },
     replyTo: {
@@ -28,9 +27,12 @@ const commentSchema = new Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
-commentSchema.virtual("children", {
+
+commentSchema.virtual("replies", {
   ref: "Comment", // The model to use
   localField: "_id", // Find people where `localField`
   foreignField: "parentId", // is equal to `foreignField`
@@ -38,4 +40,5 @@ commentSchema.virtual("children", {
   // an array. `justOne` is false by default.
   justOne: false,
 });
+
 module.exports = model("Comment", commentSchema);
