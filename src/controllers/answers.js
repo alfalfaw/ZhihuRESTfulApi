@@ -30,6 +30,7 @@ class AnswersCtl {
     ctx.body = answer;
   }
 
+  // 创建回答
   async create(ctx) {
     ctx.verifyParams({
       content: { type: "string", required: true },
@@ -43,15 +44,20 @@ class AnswersCtl {
     }).save();
     ctx.body = answer;
   }
-
+  // 修改回答
   async update(ctx) {
     ctx.verifyParams({
       content: { type: "string", required: false },
     });
+    const { content } = ctx.request.body;
     // 默认返回旧数据，加上 new 参数后返回修改后数据
-    const answer = await ctx.state.answer.update(ctx.request.body, {
-      new: true,
-    });
+    const answer = await ctx.state.answer.updateOne(
+      { content },
+      {
+        new: true,
+      }
+    );
+
     ctx.body = answer;
   }
 

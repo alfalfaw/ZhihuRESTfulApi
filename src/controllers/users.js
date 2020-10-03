@@ -5,6 +5,7 @@ const Answer = require("../models/Answer");
 const { secret } = require("../config");
 const bcrypt = require("bcrypt");
 class UsersCtl {
+  // 查询用户列表
   async find(ctx) {
     const { per_page = 10 } = ctx.query;
 
@@ -15,6 +16,7 @@ class UsersCtl {
       .limit(perPage)
       .skip(perPage * page);
   }
+  // 查询用户详情
   async findById(ctx) {
     const { fields = "" } = ctx.query;
     // 字段过滤,需要展示的字段用 ; 分隔
@@ -27,7 +29,7 @@ class UsersCtl {
     const user = await User.findById(ctx.params.id)
       .select(selectFields)
       .populate(
-        "following locations business employments.company employments.job educations.school educations.major"
+        "locations business employments.company employments.job educations.school educations.major following followingTopics likingAnswers dislikingAnswers collectingAnswers"
       );
     //  locations business employments.company employments.job educations.school educations.major
     if (!user) {
@@ -35,7 +37,7 @@ class UsersCtl {
     }
     ctx.body = user;
   }
-
+  // 创建用户
   async create(ctx) {
     ctx.verifyParams({
       name: { type: "string", required: true },
@@ -47,8 +49,10 @@ class UsersCtl {
       ctx.throw(409, "用户名已经占用");
     }
     const user = await new User(ctx.request.body).save();
+
     ctx.body = user;
   }
+  // 修改用户资料
   async update(ctx) {
     ctx.verifyParams({
       name: { type: "string", required: false },
@@ -60,23 +64,36 @@ class UsersCtl {
       business: { type: "string", required: false },
       employments: { type: "array", itemType: "object", required: false },
       educations: { type: "array", itemType: "object", required: false },
+      following: { type: "array", itemType: "object", required: false },
+      followingTopics: { type: "array", itemType: "object", required: false },
+      likingAnswers: { type: "array", itemType: "object", required: false },
+      dislikingAnswers: { type: "array", itemType: "object", required: false },
+      collectingAnswers: { type: "array", itemType: "object", required: false },
     });
 
     if (ctx.request.body.name) {
       const repeatedUser = await User.findOne({ name: ctx.request.body.name });
-      if (repeatedUser && repeatedUser._id.toString() !== ctx.params.id) {
+      if (
+        repeatedUser &&
+        repeatedUser._id.toString() !== ctx.state.user._id.toString()
+      ) {
         ctx.throw(409, "用户名已经占用");
       }
     }
     // 默认返回旧数据，加上 new 参数后返回修改后数据
-    const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body, {
-      new: true,
-    });
+    const user = await User.findByIdAndUpdate(
+      ctx.state.user._id,
+      ctx.request.body,
+      {
+        new: true,
+      }
+    );
+
     ctx.body = user;
   }
-
+  // 删除用户
   async del(ctx) {
-    await User.findByIdAndRemove(ctx.params.id);
+    await User.findByIdAndRemove(ctx.state.user._id);
     ctx.status = 204;
   }
 
@@ -127,10 +144,9 @@ class UsersCtl {
     ctx.body = user.followingTopics;
   }
 
-  // 关注
+  // 关注用户
   async follow(ctx) {
     const me = await User.findById(ctx.state.user._id).select("+following");
-
     if (!me.following.map((id) => id.toString()).includes(ctx.params.id)) {
       // console.log(`${ctx.state.user._id}关注了${ctx.params.id}`);
       me.following.push(ctx.params.id);
@@ -139,7 +155,7 @@ class UsersCtl {
 
     ctx.status = 204;
   }
-  // 取消关注
+  // 取消关注用户
   async unfollow(ctx) {
     const me = await User.findById(ctx.state.user._id).select("+following");
 
@@ -153,6 +169,7 @@ class UsersCtl {
     }
     ctx.status = 204;
   }
+
   // 关注话题
   async followTopic(ctx) {
     const me = await User.findById(ctx.state.user._id).select(
@@ -185,11 +202,50 @@ class UsersCtl {
     }
     ctx.status = 204;
   }
+  // 关注问题
+  async followQuestion(ctx) {
+    const me = await User.findById(ctx.state.user._id).select(
+      "+followingQuestions"
+    );
 
-  // 用户的问题列表
+    if (
+      !me.followingQuestions.map((id) => id.toString()).includes(ctx.params.id)
+    ) {
+      // console.log(`${ctx.state.user._id}关注了${ctx.params.id}`);
+      me.followingQuestions.push(ctx.params.id);
+      me.save();
+    }
+
+    ctx.status = 204;
+  }
+  // 取消关注问题
+  async unfollowQuestion(ctx) {
+    const me = await User.findById(ctx.state.user._id).select(
+      "+followingQuestions"
+    );
+
+    const index = me.followingQuestions
+      .map((id) => id.toString())
+      .indexOf(ctx.params.id);
+
+    if (index > -1) {
+      me.followingQuestions.splice(index, 1);
+      me.save();
+    }
+    ctx.status = 204;
+  }
+
+  // 用户问题列表
   async listQuestions(ctx) {
     const questions = await Question.find({ questioner: ctx.params.id });
     ctx.body = questions;
+  }
+  // 用户关注问题列表
+  async listFollowingQuestions(ctx) {
+    const user = await User.findById(ctx.params.id)
+      .select("+followingQuestions")
+      .populate("followingQuestions");
+    ctx.body = user.followingQuestions;
   }
   // 用户点赞的回答列表
   async listLikingAnswers(ctx) {

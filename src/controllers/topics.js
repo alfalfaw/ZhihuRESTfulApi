@@ -68,7 +68,6 @@ class TopicsCtl {
     ctx.body = users;
   }
   // 话题的问题列表
-
   async listQuestions(ctx) {
     const questions = await Question.find({
       topics: ctx.params.id,

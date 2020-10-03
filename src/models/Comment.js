@@ -19,6 +19,8 @@ const commentSchema = new Schema(
     answerId: { type: String, required: true },
 
     rootCommentId: { type: String },
+    // 父级评论 id
+    parentId: { type: String },
     replyTo: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -28,4 +30,12 @@ const commentSchema = new Schema(
     timestamps: true,
   }
 );
+commentSchema.virtual("children", {
+  ref: "Comment", // The model to use
+  localField: "_id", // Find people where `localField`
+  foreignField: "parentId", // is equal to `foreignField`
+  // If `justOne` is true, 'members' will be a single doc as opposed to
+  // an array. `justOne` is false by default.
+  justOne: false,
+});
 module.exports = model("Comment", commentSchema);

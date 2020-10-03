@@ -64,6 +64,11 @@ const userSchema = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: "Topic" }],
       select: false,
     },
+    // 关注问题
+    followingQuestions: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Question" }],
+      select: false,
+    },
 
     likingAnswers: {
       type: [

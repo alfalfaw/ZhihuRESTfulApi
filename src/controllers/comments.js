@@ -7,6 +7,7 @@ class CommentsCtl {
     const perPage = Math.max(per_page * 1, 1);
     const q = new RegExp(ctx.query.q);
     const { rootCommentId } = ctx.query;
+    console.log("oooo");
     ctx.body = await Comment.find({
       content: q,
       questionId: ctx.params.questionId,

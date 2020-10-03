@@ -75,6 +75,7 @@ module.exports = {
       ctx.throw(404, "该答案下没有此评论");
     }
     ctx.state.comment = comment;
+    await next();
   },
   // 检查评论人
   async checkCommentator(ctx, next) {

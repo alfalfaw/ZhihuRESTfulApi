@@ -1,4 +1,5 @@
 const Question = require("../models/Question");
+const Topic = require("../models/Topic");
 const User = require("../models/User");
 class QuestionsCtl {
   async find(ctx) {
@@ -45,7 +46,7 @@ class QuestionsCtl {
       description: { type: "string", required: false },
     });
     // 默认返回旧数据，加上 new 参数后返回修改后数据
-    const question = await ctx.state.question.update(ctx.request.body, {
+    const question = await ctx.state.question.updateOne(ctx.request.body, {
       new: true,
     });
     ctx.body = question;
@@ -56,11 +57,17 @@ class QuestionsCtl {
     ctx.status = 204;
   }
 
-  // 获取话题关注列表
+  // 获取问题关注列表
   async listFollowers(ctx) {
-    console.log("okkkk");
-    const users = await User.find({ followingTopics: ctx.params.id });
+    const users = await User.find({ followingQuestions: ctx.params.id });
     ctx.body = users;
+  }
+  // 问题的话题列表
+  async listTopics(ctx) {
+    const question = await Question.findById(ctx.params.id)
+      .select("+topics")
+      .populate("topics");
+    ctx.body = question.topics;
   }
 }
 module.exports = new QuestionsCtl();
