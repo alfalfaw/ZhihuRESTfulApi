@@ -1,0 +1,38 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+# on 何时触发 jobs ，默认是提交和拉取 master 分支时
+on:
+  push:
+    branches: [master]
+  # pull_request:
+  #   branches: [master]
+
+jobs:
+  build:
+    # job 的运行环境
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
+
+    # 测试在不同Node版本中运行项目
+    strategy:
+      matrix:
+        # node-version: [10.x, 12.x, 14.x]
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          # 更换镜像源
+          # registry-url: 'https://registry.npm.taobao.org/'
+      # 安装需要的依赖
+      # - run: npm ci
+      - run: npm i
+      # --if-present 如果命令存在则执行
+      # - run: npm run build --if-present
+      # - run: npm test
